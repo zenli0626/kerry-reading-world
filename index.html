@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kerry's Reading World — Book reviews from a kid who loves to read</title>
+<meta name="description" content="Honest book reviews and recommendations — from Holes to Percy Jackson, Wonder, Alan Gratz and more.">
+<style>
+  :root{
+    --ink:#2b2118;
+    --ink-soft:#5b4f43;
+    --paper:#fbf6ec;
+    --card:#ffffff;
+    --accent:#c2542a;
+    --accent-2:#2f6f5e;
+    --gold:#e0a008;
+    --line:#e7dcc9;
+    --shadow:0 8px 26px rgba(75,52,30,.10);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+
+  /* WELCOME SPLASH */
+  .welcome{
+    position:fixed;inset:0;z-index:50;
+    background:linear-gradient(160deg,#f9d6d2 0%, #f6c7c9 55%, #f3bcc4 100%);
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    padding:30px;transition:opacity .5s ease;
+  }
+  .welcome.hide{opacity:0;pointer-events:none}
+  .welcome-inner{max-width:760px}
+  .welcome-title{
+    color:#ffffff;font-weight:800;
+    font-size:clamp(2.1rem,6.5vw,4.2rem);line-height:1.15;margin:0 0 46px;
+    text-shadow:0 3px 16px rgba(186,110,120,.45);
+  }
+  .welcome-bottom{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .next-btn{
+    background:#ffffff;color:#e0808f;font-weight:800;font-family:inherit;
+    font-size:1.25rem;border:none;border-radius:999px;
+    padding:14px 46px;cursor:pointer;box-shadow:0 8px 22px rgba(186,110,120,.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .next-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(186,110,120,.45)}
+  .enter-hint{color:#ffffff;font-weight:700;font-size:1rem;margin:0;text-shadow:0 2px 10px rgba(186,110,120,.4)}
+
+  /* BACK BUTTON (returns to welcome page) */
+  .back-btn{
+    position:fixed;top:18px;left:18px;z-index:40;
+    background:#800020;color:#fff;font-weight:700;font-family:inherit;
+    font-size:.95rem;border:none;border-radius:999px;
+    padding:10px 22px;cursor:pointer;box-shadow:0 6px 16px rgba(80,10,25,.35);
+    transition:transform .15s, box-shadow .15s, background .15s;
+  }
+  .back-btn:hover{background:#6a001b;transform:translateY(-2px);box-shadow:0 9px 20px rgba(80,10,25,.45)}
+  body{
+    margin:0;
+    font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* HERO */
+  header.hero{
+    background:
+      radial-gradient(1200px 400px at 80% -10%, rgba(224,160,8,.18), transparent 60%),
+      linear-gradient(160deg,#3a2b1d 0%, #5a3a23 55%, #7a4a2a 100%);
+    color:#fdf3e3;
+    padding:64px 22px 70px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero .kicker{
+    letter-spacing:.32em;text-transform:uppercase;font-size:.72rem;
+    opacity:.85;font-family:'Trebuchet MS',sans-serif;margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:clamp(2.3rem,6vw,4.1rem);
+    margin:0 0 12px;line-height:1.05;font-weight:700;
+    text-shadow:0 2px 18px rgba(0,0,0,.25);
+  }
+  .hero p.lede{
+    max-width:640px;margin:0 auto;font-size:clamp(1.02rem,2.4vw,1.25rem);
+    opacity:.94;
+  }
+  .hero .byline{margin-top:18px;font-family:'Trebuchet MS',sans-serif;font-size:.9rem;opacity:.8}
+  .shelf{
+    display:flex;justify-content:center;gap:5px;margin-top:30px;flex-wrap:wrap;
+  }
+  .shelf span{
+    width:13px;height:46px;border-radius:3px;display:inline-block;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.12);
+  }
+
+  /* CONTROLS */
+  .controls{
+    max-width:1080px;margin:-32px auto 0;padding:0 22px;position:relative;z-index:5;
+  }
+  .controls-inner{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);padding:16px 18px;
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;
+  }
+  .search{
+    flex:1 1 240px;display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fffdf8;
+  }
+  .search input{border:none;outline:none;background:transparent;font-size:1rem;width:100%;font-family:inherit;color:var(--ink)}
+  .search select{border:none;outline:none;background:transparent;font-size:1rem;width:100%;font-family:inherit;color:var(--ink);cursor:pointer}
+  .filters{display:flex;gap:7px;flex-wrap:wrap}
+  .chip{
+    font-family:'Trebuchet MS',sans-serif;font-size:.82rem;
+    border:1px solid var(--line);background:#fffdf8;color:var(--ink-soft);
+    padding:6px 13px;border-radius:999px;cursor:pointer;transition:.15s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .count{font-family:'Trebuchet MS',sans-serif;font-size:.82rem;color:var(--ink-soft);width:100%;text-align:right;margin-top:2px}
+
+  /* GRID */
+  main{max-width:1080px;margin:0 auto;padding:34px 22px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:24px}
+  article.book{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .15s, box-shadow .15s;
+  }
+  article.book:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(75,52,30,.16)}
+  .spine{height:8px;background:var(--accent)}
+  .book .body{padding:22px 22px 24px}
+  .book .tagrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+  .genre{
+    font-family:'Trebuchet MS',sans-serif;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+    color:#fff;background:var(--accent-2);padding:4px 10px;border-radius:999px;
+  }
+  .stars{color:var(--gold);font-size:.95rem;letter-spacing:1px;white-space:nowrap}
+  .stars .empty{color:#e3d6bf}
+  .book h2{margin:0 0 2px;font-size:1.38rem;line-height:1.2}
+  .book .author{font-style:italic;color:var(--ink-soft);margin:0 0 12px;font-size:.98rem}
+  .book .review p{margin:0 0 11px}
+  .book .review p:last-child{margin-bottom:0}
+  .pull{
+    border-left:3px solid var(--gold);padding:4px 0 4px 14px;margin:14px 0;
+    color:var(--ink-soft);font-style:italic;
+  }
+  .buy-btn{
+    display:inline-flex;align-items:center;gap:8px;margin-top:16px;
+    background:#ff9900;color:#1a1a1a;font-family:'Trebuchet MS',sans-serif;font-weight:700;
+    font-size:.92rem;text-decoration:none;border-radius:9px;padding:10px 16px;
+    box-shadow:0 4px 12px rgba(255,153,0,.3);transition:transform .15s, box-shadow .15s, background .15s;
+  }
+  .buy-btn:hover{background:#f08c00;transform:translateY(-2px);box-shadow:0 7px 16px rgba(255,153,0,.4);text-decoration:none}
+  .buy-btn .cart{font-size:1rem}
+  .noresult{text-align:center;color:var(--ink-soft);padding:40px;font-style:italic;display:none}
+
+  /* CLOSING SLIDE */
+  .closing{
+    margin-top:30px;
+    background:linear-gradient(160deg,#f9d6d2 0%, #f6c7c9 55%, #f3bcc4 100%);
+    padding:64px 22px 70px;text-align:center;
+  }
+  .closing-inner{max-width:720px;margin:0 auto}
+  .closing-title{
+    color:#fff;font-weight:800;font-size:clamp(1.7rem,4.5vw,2.8rem);
+    line-height:1.2;margin:0 0 16px;text-shadow:0 3px 14px rgba(186,110,120,.45);
+  }
+  .closing-sub{color:#fff;font-weight:700;font-size:1.05rem;margin:0 0 22px;text-shadow:0 2px 10px rgba(186,110,120,.4)}
+  .feedback-stars{display:inline-flex;gap:8px;font-size:clamp(2.4rem,8vw,3.4rem);line-height:1;cursor:pointer}
+  .fstar{color:#ffffff;opacity:.55;transition:transform .12s, opacity .12s, color .12s;user-select:none}
+  .fstar:hover{transform:scale(1.15)}
+  .fstar.lit{color:#ffd24a;opacity:1;text-shadow:0 2px 10px rgba(140,90,0,.35)}
+  .feedback-msg{color:#fff;font-weight:800;font-size:1.15rem;min-height:1.4em;margin:18px 0 0;text-shadow:0 2px 10px rgba(186,110,120,.4)}
+
+  footer{
+    text-align:center;padding:46px 22px 60px;color:var(--ink-soft);
+    font-family:'Trebuchet MS',sans-serif;font-size:.86rem;
+  }
+  footer .heart{color:var(--accent)}
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr}
+    .count{text-align:left}
+  }
+</style>
+</head>
+<body>
+
+<section id="welcome" class="welcome">
+  <div class="welcome-inner">
+    <h1 class="welcome-title">Welcome to my reading world.<br>Discover what you like!</h1>
+    <div class="welcome-bottom">
+      <button id="nextBtn" class="next-btn" autofocus>Next &rarr;</button>
+      <p class="enter-hint">You can also hit enter, on you computer!</p>
+    </div>
+  </div>
+</section>
+
+<button id="backBtn" class="back-btn">&larr; Back</button>
+
+<header class="hero">
+  <div class="kicker">A Reading Blog</div>
+  <h1>Kerry's Reading World</h1>
+  <p class="lede">Welcome to my corner of the internet, where I tell you all about the books I read &mdash; the ones that made me laugh, cry, stay up way past bedtime, and want to tell everybody I know.</p>
+  <div class="byline">Honest reviews &bull; New books added all the time</div>
+  <div class="shelf">
+    <span style="background:#c2542a"></span><span style="background:#2f6f5e"></span>
+    <span style="background:#e0a008"></span><span style="background:#3a6ea5"></span>
+    <span style="background:#8c4a8e"></span><span style="background:#b5462a"></span>
+    <span style="background:#4a7c59"></span><span style="background:#d98324"></span>
+    <span style="background:#516b91"></span><span style="background:#a23e48"></span>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="controls-inner">
+    <label class="search">
+      <span aria-hidden="true">📖</span>
+      <select id="favorite" aria-label="Choose your favorite book">
+        <option value="all">Choose your favorite!</option>
+      </select>
+    </label>
+    <div class="filters" id="filters">
+      <button class="chip active" data-genre="all">All</button>
+      <button class="chip" data-genre="Adventure">Adventure</button>
+      <button class="chip" data-genre="Realistic">Realistic</button>
+      <button class="chip" data-genre="Historical">Historical</button>
+      <button class="chip" data-genre="Funny">Funny</button>
+      <button class="chip" data-genre="Nonfiction">Nonfiction</button>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+</div>
+
+<main>
+  <div class="grid" id="grid"><!-- books injected here --></div>
+  <div class="noresult" id="noresult">No books match that yet &mdash; try another search!</div>
+</main>
+
+<section class="closing">
+  <div class="closing-inner">
+    <h2 class="closing-title">I hope that you will try one of these books at home...<br>and love it!</h2>
+    <p class="closing-sub">How did you like my reading world? Tap the stars to give me your feedback!</p>
+    <div id="feedbackStars" class="feedback-stars" role="radiogroup" aria-label="Rate this blog">
+      <span class="fstar" data-val="1" role="radio" aria-label="1 star" tabindex="0">&#9733;</span>
+      <span class="fstar" data-val="2" role="radio" aria-label="2 stars" tabindex="0">&#9733;</span>
+      <span class="fstar" data-val="3" role="radio" aria-label="3 stars" tabindex="0">&#9733;</span>
+      <span class="fstar" data-val="4" role="radio" aria-label="4 stars" tabindex="0">&#9733;</span>
+      <span class="fstar" data-val="5" role="radio" aria-label="5 stars" tabindex="0">&#9733;</span>
+    </div>
+    <p id="feedbackMsg" class="feedback-msg"></p>
+  </div>
+</section>
+
+<footer>
+  Made with <span class="heart">&#10084;</span> by Kerry &middot; Kerry's Reading World &middot; Tell a friend about a good book today.
+</footer>
+
+<script>
+const books = [
+  {
+    title:"Holes",
+    author:"Louis Sachar",
+    genre:["Adventure","Funny"],
+    rating:5,
+    review:`<p>Stanley Yelnats gets sent to Camp Green Lake, a place that has no lake and definitely isn't green, for a crime he didn't commit. The "camp" is really a dried-up desert where boys are forced to dig one hole every single day, five feet wide and five feet deep. The Warden says it builds character. Stanley figures out pretty fast that they're actually digging for something.</p>
+    <p>What makes this book genius is how every little detail connects. There's a story about Stanley's "no-good-dirty-rotten-pig-stealing-great-great-grandfather," a outlaw named Kissin' Kate Barlow, and a curse &mdash; and it all weaves together into one perfect ending. I keep telling people: just trust it, because the payoff is so satisfying.</p>
+    <div class="pull">Funny, mysterious, and weirdly emotional. If you only read one book on this whole blog, read this one.</div>`
+  },
+  {
+    title:"Percy Jackson and the Olympians (the whole series)",
+    author:"Rick Riordan",
+    genre:["Adventure","Funny"],
+    rating:5,
+    review:`<p>Percy Jackson finds out he's a demigod &mdash; half human, half Greek god &mdash; and gets shipped off to Camp Half-Blood, where the kids are children of Zeus, Poseidon, Athena, and the rest. Across five books (<em>The Lightning Thief</em>, <em>The Sea of Monsters</em>, <em>The Titan's Curse</em>, <em>The Battle of the Labyrinth</em>, and <em>The Last Olympian</em>) Percy and his friends Annabeth and Grover go on quests, fight monsters, and try to stop the Titans from destroying Olympus.</p>
+    <p>The best part is Percy's voice. He's funny and sarcastic and acts like a normal kid even when he's fighting the god of war. The series sneakily teaches you all the Greek mythology you'll ever need, and it gets better with every book. Once you finish, you'll want to read everything else Rick Riordan has ever written.</p>
+    <div class="pull">Start with The Lightning Thief and clear your weekend. You won't want to stop.</div>`
+  },
+  {
+    title:"The Heroes of Olympus: The Lost Hero & The Mark of Athena",
+    author:"Rick Riordan",
+    genre:["Adventure"],
+    rating:5,
+    review:`<p>This series picks up after Percy Jackson and mixes the Greek and Roman demigods together. In <em>The Lost Hero</em> (book 1), a boy named Jason wakes up on a school bus with no memory of who he is, alongside Piper and Leo &mdash; and the three of them get pulled into a brand-new prophecy. By <em>The Mark of Athena</em> (book 3), the Greek and Roman camps finally collide aboard a flying warship, and Annabeth has to follow a dangerous solo quest that leads to one of the most jaw-dropping cliffhangers Rick Riordan ever wrote.</p>
+    <p>I read the first and third books, and even out of order they're packed with action. There are more main characters than in Percy Jackson, so each one gets their own point of view, which is cool. Fair warning: that ending to <em>The Mark of Athena</em> will make you yell. I'm still not over it.</p>`
+  },
+  {
+    title:"A Piece of the World",
+    author:"Mildred Walker",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>A young girl named Calder discovers a strange green, serpent-shaped boulder deep in the woods above her town &mdash; a rock left behind long ago by a melting glacier. The boulder becomes her special secret place, and through it she makes two unlikely friends: a boy named Walt and an elderly retired geology professor. But when other people start making plans for the boulder, those friendships get put to the test.</p>
+    <p>This is a quieter, gentler story than most of the action books on my shelf, but I really liked it. It's about growing up, holding onto the places you love, and learning to get along with all kinds of people. The idea that a single rock could mean so much to so many different people really stuck with me.</p>`
+  },
+  {
+    title:"Wonder",
+    author:"R.J. Palacio",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>August "Auggie" Pullman was born with a facial difference, and <em>Wonder</em> is about his very first year going to a real school in fifth grade. He just wants to be treated like an ordinary kid, but not everyone is kind about it. The book is told from lots of different points of view &mdash; Auggie, his sister, his friends &mdash; so you see the same events through everybody's eyes.</p>
+    <p>This is the book that taught me the line "When given the choice between being right or being kind, choose kind." It made me cry and it made me want to be a better person. Everybody at school should read it.</p>
+    <div class="pull">Choose kind. This book will stick with you forever.</div>`
+  },
+  {
+    title:"Blended",
+    author:"Sharon M. Draper",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>Eleven-year-old Isabella's parents are divorced, and she splits every week between two homes &mdash; one Black, one white &mdash; switching houses, rules, and even pianos every Sunday. She's biracial and feels like she's constantly being asked to pick a side or fit into a box. On top of that, she's preparing for a big piano recital while figuring out who she really is.</p>
+    <p>Sharon Draper writes feelings so honestly. Isabella's frustration about being pulled in two directions felt so real, and the story builds to a scary, powerful moment near the end that I won't spoil. It's a book that makes you think about identity and fairness.</p>`
+  },
+  {
+    title:"Out of My Mind (the series)",
+    author:"Sharon M. Draper",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>Melody is one of the smartest kids in her school &mdash; she has a photographic memory and remembers everything &mdash; but she has cerebral palsy and can't speak or walk, so for years nobody knows how brilliant she actually is. In <em>Out of My Mind</em>, she finally gets a computer that talks for her, and suddenly she can show the world what's been in her head all along. The sequel, <em>Out of My Heart</em>, sends Melody to summer camp for an adventure of her own.</p>
+    <p>This book changed how I think about people. Melody is funny and fierce and impatient, and you spend the whole story rooting for her while also getting mad at the people who underestimate her. It's emotional in the best way.</p>
+    <div class="pull">You'll never assume anything about a person again. A must-read.</div>`
+  },
+  {
+    title:"All the books by Alan Gratz",
+    author:"Alan Gratz",
+    genre:["Historical","Adventure"],
+    rating:5,
+    review:`<p>Alan Gratz writes fast, intense historical adventure novels, usually about real events in history seen through the eyes of kids. <em>Refugee</em> follows three children fleeing danger in three different time periods &mdash; Nazi Germany, 1990s Cuba, and modern Syria &mdash; and their stories quietly connect. <em>Allies</em> is about D-Day, <em>Grenade</em> is set during the Battle of Okinawa, <em>Ground Zero</em> is about 9/11, and <em>Prisoner B-3087</em> and <em>Projekt 1065</em> are gripping World War II survival stories. There are tons more, and they're all page-turners.</p>
+    <p>What I love is that his books never feel like a boring history lesson &mdash; they feel like action movies, but you actually learn what really happened and why it mattered. Some chapters end on such big cliffhangers that I literally couldn't put them down. <em>Refugee</em> is the perfect one to start with.</p>
+    <div class="pull">History that reads like an action movie. Start with Refugee, then read them all.</div>`
+  },
+  {
+    title:"On Thin Ice",
+    author:"Jessica Kim",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>Twelve-year-old twins Phoebe and Dexter Bae are total opposites who only agree on one thing: they love being on the ice. Phoebe is all about pairs figure skating and Dex lives for hockey &mdash; but when Phoebe's skating partner gets injured and Dex gets cut from his team, their mom suggests something wild: the twins should skate together. The problem is they haven't really been close since their dad passed away two years ago.</p>
+    <p>The story switches between Phoebe and Dex, so you get both sides of their sibling rivalry, and it's funny and heartfelt at the same time. Underneath the skating, it's really about grief, family, and learning to lean on each other. A great pick if you like sports stories with a lot of heart.</p>`
+  },
+  {
+    title:"Rules",
+    author:"Cynthia Lord",
+    genre:["Realistic"],
+    rating:5,
+    review:`<p>Twelve-year-old Catherine has a younger brother, David, who is autistic, and she's always making up "rules" to help him know how to act &mdash; like "no toys in the fish tank." She loves David, but she also wishes her family could feel a little more normal, and she's nervous about what new friends will think. Then she meets Jason, a boy who can't speak and communicates through a book of word cards, and her ideas about "normal" start to change.</p>
+    <p>It's a gentle, honest book about family and friendship and not judging people. Catherine feels like a real kid &mdash; sometimes selfish, sometimes kind, always trying. It made me think about my own brothers and sisters.</p>`
+  },
+  {
+    title:"Wayside School (the series)",
+    author:"Louis Sachar",
+    genre:["Funny"],
+    rating:5,
+    review:`<p>Wayside School was supposed to be built one story high with thirty classrooms in a row, but the builder made a mistake and built it thirty stories high with one classroom on each floor. That mix-up is the whole vibe of these books: completely silly. Each chapter is about a different kid in Mrs. Jewls's class on the top floor, and weird, wonderful, impossible things happen &mdash; like a teacher who turns kids into apples.</p>
+    <p>These are the books I hand to anyone who says reading is boring. They're so funny and so quick that you'll finish the first one in an afternoon and immediately want the next. <em>Sideways Stories from Wayside School</em> is the perfect place to start.</p>
+    <div class="pull">Pure silliness. Guaranteed to make you laugh out loud.</div>`
+  },
+  {
+    title:"Marvin Redpost (the series)",
+    author:"Louis Sachar",
+    genre:["Funny"],
+    rating:5,
+    review:`<p>Marvin Redpost is a regular third grader who gets into the kind of big, dramatic situations that feel HUGE when you're a kid. In one book he's convinced he might secretly be a lost prince; in another he's terrified after his teacher tells him not to do something and he just has to know what would happen. The books are short chapter books, perfect for younger readers or anyone who wants a quick, fun read.</p>
+    <p>Louis Sachar just gets how kids think. Marvin worries about exactly the things real kids worry about, and the stories are funny without ever being mean. A great series to read on your own or with a younger sibling.</p>`
+  },
+  {
+    title:"Class Dismissed",
+    author:"Allan Woodrow",
+    genre:["Funny","Realistic"],
+    rating:5,
+    review:`<p>When the worst-behaved class in school accidentally makes their teacher quit, they realize the office never noticed &mdash; so they decide to run the classroom themselves, without any teacher at all. At first it sounds like a dream: no rules, no homework, no grown-ups. But keeping the secret turns out to be a lot harder (and funnier) than they expected.</p>
+    <p>Told from several different students' points of view, it's a hilarious "what if" idea, but it also sneaks in a real lesson about teamwork and responsibility. If you've ever daydreamed about running your own classroom, this one's for you.</p>`
+  },
+  {
+    title:"Unschooled",
+    author:"Allan Woodrow",
+    genre:["Funny","Realistic"],
+    rating:5,
+    review:`<p>It's Spirit Week at school, and the whole student body gets split into two teams for a week-long competition. The problem? Best friends George and Lilly end up as captains on opposite teams. What starts as friendly fun turns into an all-out battle, and their friendship gets caught in the middle of the chaos.</p>
+    <p>It's fast and funny like Allan Woodrow's other books, with lots of pranks and competition energy. But underneath the silliness it asks a good question: is winning really worth hurting your best friend? A fun read, especially if your school does Spirit Week.</p>`
+  },
+  {
+    title:"Field Tripped",
+    author:"Allan Woodrow",
+    genre:["Funny","Realistic"],
+    rating:5,
+    review:`<p>This one takes a whole class on a field trip where, naturally, everything that can go wrong does. Different kids narrate different parts, each with their own plans, secrets, and problems, and it all tangles together over one chaotic day away from school.</p>
+    <p>If you liked <em>Class Dismissed</em>, this has the same fun, fast, lots-of-narrators style. It's a quick, laugh-out-loud read that's easy to fly through, and it's relatable to anyone who's ever been on a field trip that didn't go according to plan.</p>`
+  },
+  {
+    title:"The Pet War",
+    author:"Allan Woodrow",
+    genre:["Funny","Realistic"],
+    rating:5,
+    review:`<p>Otto desperately wants a dog. His sister Lexi desperately wants a cat. Their mom says there's only room (and money) for one pet &mdash; so she makes them compete: whoever can raise the most money on their own gets to choose. What follows is an all-out sibling money war full of schemes, lemonade stands, and sneaky tricks.</p>
+    <p>It's a really fun read, especially if you have a brother or sister you "compete" with. And while you're laughing at Otto and Lexi's battle, the book actually teaches you a bit about saving money and working hard for something you want.</p>`
+  },
+  {
+    title:"World's Cutest Cats & Kittens",
+    author:"Lisa Regan",
+    genre:["Nonfiction"],
+    rating:5,
+    review:`<p>Exactly what it sounds like, and that's a good thing! This is a fact-packed picture book bursting with adorable cat and kitten photos, plus fun facts about different breeds, how cats behave, and how to take care of them. It's the kind of book you flip through again and again.</p>
+    <p>It's a nice change of pace from all the big novels &mdash; sometimes you just want to look at cute kittens and learn cool cat facts. If you're a cat lover (or want to be one), this is a sweet, happy book to keep on your shelf.</p>`
+  }
+];
+
+/* ===========================================================
+   AMAZON AFFILIATE SETTINGS
+   1) Sign up for free at https://affiliate-program.amazon.com
+   2) Amazon gives you a tracking ID (a "tag"), e.g. kerrysreading-20
+   3) Replace YOURTAG-20 below with your real tag — that's it!
+      Every "Buy on Amazon" button will then earn you a commission.
+   =========================================================== */
+const AFFILIATE_TAG = "YOURTAG-20";
+function amazonLink(book){
+  const q = encodeURIComponent(book.title.replace(/\(.*?\)/g,'').trim() + ' ' + book.author);
+  return 'https://www.amazon.com/s?k=' + q + '&tag=' + AFFILIATE_TAG;
+}
+
+// Put the books in alphabetical order by title (ignoring a leading "A"/"An"/"The")
+function sortKey(t){ return t.replace(/^(the|an|a)\s+/i,'').toLowerCase(); }
+books.sort((x,y)=> sortKey(x.title).localeCompare(sortKey(y.title)));
+
+const grid = document.getElementById('grid');
+const noresult = document.getElementById('noresult');
+const countEl = document.getElementById('count');
+const favEl = document.getElementById('favorite');
+let activeGenre = 'all';
+
+// Fill the "Choose your favorite!" dropdown with every title and author
+books.forEach((b,i)=>{
+  const opt=document.createElement('option');
+  opt.value=i;
+  opt.textContent = b.title + ' — ' + b.author;
+  favEl.appendChild(opt);
+});
+
+function starHtml(n){
+  let s='';
+  for(let i=1;i<=5;i++){ s += i<=n ? '★' : '<span class="empty">★</span>'; }
+  return s;
+}
+
+function render(){
+  const fav = favEl.value;
+  grid.innerHTML='';
+  let shown=0;
+  books.forEach((b,i)=>{
+    const matchGenre = activeGenre==='all' || b.genre.includes(activeGenre);
+    const matchFav = fav==='all' || String(i)===fav;
+    if(matchGenre && matchFav){
+      shown++;
+      const el=document.createElement('article');
+      el.className='book';
+      el.innerHTML=`
+        <div class="spine"></div>
+        <div class="body">
+          <div class="tagrow">
+            <span class="genre">${b.genre[0]}</span>
+            <span class="stars" title="${b.rating} out of 5">${starHtml(b.rating)}</span>
+          </div>
+          <h2>${b.title}</h2>
+          <p class="author">by ${b.author}</p>
+          <div class="review">${b.review}</div>
+          <a class="buy-btn" href="${amazonLink(b)}" target="_blank" rel="sponsored noopener nofollow">
+            <span class="cart">🛒</span> Buy on Amazon
+          </a>
+        </div>`;
+      grid.appendChild(el);
+    }
+  });
+  noresult.style.display = shown? 'none':'block';
+  countEl.textContent = shown + (shown===1?' book':' books') + ' on the shelf';
+}
+
+document.getElementById('filters').addEventListener('click', e=>{
+  if(!e.target.classList.contains('chip')) return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  e.target.classList.add('active');
+  activeGenre = e.target.dataset.genre;
+  render();
+});
+favEl.addEventListener('change', render);
+render();
+
+// Welcome splash: dismiss with the Next button or the Enter key
+const welcome = document.getElementById('welcome');
+const nextBtn = document.getElementById('nextBtn');
+let welcomeOpen = true;
+// Put keyboard focus on the page so Enter works immediately
+window.addEventListener('load', ()=>{ try{ nextBtn.focus(); }catch(e){} });
+nextBtn.focus();
+function dismissWelcome(){
+  if(!welcomeOpen) return;
+  welcomeOpen = false;
+  welcome.classList.add('hide');
+  setTimeout(()=>{ welcome.style.display='none'; }, 500);
+}
+function showWelcome(){
+  welcomeOpen = true;
+  welcome.style.display='flex';
+  // force reflow so the fade-in transition plays
+  void welcome.offsetWidth;
+  welcome.classList.remove('hide');
+  window.scrollTo(0,0);
+}
+document.getElementById('nextBtn').addEventListener('click', dismissWelcome);
+document.getElementById('backBtn').addEventListener('click', showWelcome);
+
+// Star feedback on the closing slide
+const fstars = Array.from(document.querySelectorAll('.fstar'));
+const feedbackMsg = document.getElementById('feedbackMsg');
+let chosenRating = 0;
+const messages = {
+  1:"Thanks for your honesty! I'll keep reading and find better ones. 📚",
+  2:"Thank you! I'll work on making my reviews even better.",
+  3:"Thanks for the feedback! Glad you stopped by. 😊",
+  4:"Yay, thank you so much! Come back for more book reviews!",
+  5:"Wow, five stars?! You just made my day! Thank you! ⭐"
+};
+function paint(n){
+  fstars.forEach(s=> s.classList.toggle('lit', Number(s.dataset.val)<=n));
+}
+fstars.forEach(star=>{
+  const val=Number(star.dataset.val);
+  star.addEventListener('mouseenter', ()=> paint(val));
+  star.addEventListener('mouseleave', ()=> paint(chosenRating));
+  star.addEventListener('click', ()=>{
+    chosenRating=val; paint(val);
+    feedbackMsg.textContent=messages[val];
+  });
+  star.addEventListener('keydown', e=>{
+    if(e.key==='Enter' || e.key===' '){
+      e.preventDefault();
+      chosenRating=val; paint(val);
+      feedbackMsg.textContent=messages[val];
+    }
+  });
+});
+document.addEventListener('keydown', e=>{
+  if(welcomeOpen && (e.key==='Enter' || e.keyCode===13)){
+    e.preventDefault();
+    dismissWelcome();
+  }
+});
+</script>
+</body>
+</html>
